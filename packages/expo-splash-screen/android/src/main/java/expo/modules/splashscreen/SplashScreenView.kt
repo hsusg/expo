@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 
 @SuppressLint("ViewConstructor")
-class SplashScreenView(
+open class SplashScreenView(
   context: Context
 ) : RelativeLayout(context) {
   val imageView: ImageView = ImageView(context).also { view ->

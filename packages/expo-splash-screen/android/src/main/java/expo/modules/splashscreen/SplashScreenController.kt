@@ -1,11 +1,15 @@
 package expo.modules.splashscreen
 
 import android.app.Activity
+import android.os.CountDownTimer
 import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
 import expo.modules.splashscreen.exceptions.NoContentViewException
 import java.lang.ref.WeakReference
+import java.util.*
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 
@@ -22,6 +26,7 @@ class SplashScreenController(
 
   private var autoHideEnabled = true
   private var splashScreenShown = false
+  private var timer: Timer? = null
 
   private var rootView: ViewGroup? = null
 
@@ -34,6 +39,11 @@ class SplashScreenController(
       splashScreenShown = true
       successCallback()
       searchForRootView()
+
+      timer = Timer("schedule", true);
+      timer?.schedule(2000) {
+        (splashScreenView as? SplashScreenDismissibleView)?.showVisibilityWarningWithCallback(weakActivity)
+      }
     }
   }
 
@@ -68,6 +78,7 @@ class SplashScreenController(
       autoHideEnabled = true
       splashScreenShown = false
       successCallback(true)
+      timer?.cancel()
     }
   }
 
