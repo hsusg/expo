@@ -34,12 +34,15 @@ import expo.interfaces.devmenu.items.DevMenuScreenItem
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.interfaces.devmenu.items.getItemsOfType
 import expo.modules.devmenu.api.DevMenuExpoApiClient
+import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuSettings
 import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
+  val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
+
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var session: DevMenuSession? = null

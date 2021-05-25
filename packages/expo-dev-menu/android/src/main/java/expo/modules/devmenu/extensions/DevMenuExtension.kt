@@ -18,6 +18,10 @@ import expo.interfaces.devmenu.items.DevMenuItemsContainer
 import expo.interfaces.devmenu.items.DevMenuScreen
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.modules.devmenu.DEV_MENU_TAG
+import expo.modules.devmenu.DevMenuManager
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class DevMenuExtension(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
@@ -76,6 +80,12 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       }
     }
 
+    val jsInspectorAction = { metroHost: String, applicationId: String ->
+      GlobalScope.launch {
+        DevMenuManager.metroClient.openJSInspector(metroHost, applicationId)
+      }
+    }
+
     action("reload", reloadAction) {
       label = { "Reload" }
       glyphName = { "reload" }
@@ -109,6 +119,22 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
     }
 
     if (devSettings is DevInternalSettings) {
+      val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
+
+      action("js-inspector", { jsInspectorAction(metroHost, reactApplicationContext.packageName) }) {
+        isAvailable = {
+          var result: Boolean
+          runBlocking {
+            result = DevMenuManager.metroClient
+              .queryJSInspectorAvailability(metroHost, reactApplicationContext.packageName)
+          }
+          result
+        }
+        label = { "Open JavaScript Inspector" }
+        glyphName = { "language-javascript" }
+        importance = DevMenuItemImportance.LOW.value
+      }
+
       val fastRefreshAction = {
         devSettings.isHotModuleReplacementEnabled = !devSettings.isHotModuleReplacementEnabled
       }
