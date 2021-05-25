@@ -1,19 +1,15 @@
 package host.exp.exponent.experience.splashscreen
 
 import android.content.Context
-import android.view.Gravity
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AlphaAnimation
-import android.widget.Toast
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
-import expo.modules.splashscreen.SplashScreenDismissibleView
 import expo.modules.splashscreen.SplashScreenView
 import expo.modules.splashscreen.SplashScreenViewProvider
 import expo.modules.updates.manifest.raw.RawManifest
 import host.exp.exponent.analytics.EXL
-import host.exp.exponent.utils.ToastHelper
 
 /**
  * SplashScreenView provider that parses manifest and extracts splash configuration.
@@ -29,7 +25,7 @@ class ManagedAppSplashScreenViewProvider(
   }
 
   override fun createSplashScreenView(context: Context): View {
-    splashScreenView = SplashScreenDismissibleView(context)
+    splashScreenView = SplashScreenView(context)
     configureSplashScreenView(context, config, null)
     return splashScreenView
   }
