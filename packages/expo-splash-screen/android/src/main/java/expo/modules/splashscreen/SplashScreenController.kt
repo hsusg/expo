@@ -1,16 +1,13 @@
 package expo.modules.splashscreen
 
 import android.app.Activity
-import android.os.CountDownTimer
 import android.os.Handler
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import expo.modules.splashscreen.exceptions.NoContentViewException
 import java.lang.ref.WeakReference
 import java.util.*
-import java.util.Timer
 import kotlin.concurrent.schedule
 
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
@@ -29,8 +26,8 @@ class SplashScreenController(
   private var autoHideEnabled = true
   private var splashScreenShown = false
 
-  private var timer: Timer? = null
   private var warningTimerDurationMs = 20000
+  private var warningHandler = Handler()
 
   private var rootView: ViewGroup? = null
 
@@ -44,13 +41,12 @@ class SplashScreenController(
       successCallback()
       searchForRootView()
 
-      timer = Timer("scheduleWarning", true);
-      timer?.schedule(warningTimerDurationMs) {
+      warningHandler.postDelayed({
         if (BuildConfig.DEBUG) {
           val warningMessage = "Looks like the SplashScreen has been visible for over 20 seconds - did you forget to hide it?"
           Toast.makeText(weakActivity.get()?.applicationContext, warningMessage, Toast.LENGTH_LONG).show()
         }
-      }
+      }, warningTimerDurationMs)
     }
   }
 
@@ -85,7 +81,7 @@ class SplashScreenController(
       autoHideEnabled = true
       splashScreenShown = false
       successCallback(true)
-      timer?.cancel()
+      warningHandler.removeCallbacksAndMessages(null)
     }
   }
 
