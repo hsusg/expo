@@ -28,7 +28,9 @@ class SplashScreenController(
 
   private var autoHideEnabled = true
   private var splashScreenShown = false
+
   private var timer: Timer? = null
+  private var warningTimerDurationMs = 20000
 
   private var rootView: ViewGroup? = null
 
@@ -43,7 +45,7 @@ class SplashScreenController(
       searchForRootView()
 
       timer = Timer("scheduleWarning", true);
-      timer?.schedule(2000) {
+      timer?.schedule(warningTimerDurationMs) {
         if (BuildConfig.DEBUG) {
           val warningMessage = "Looks like the SplashScreen has been visible for over 20 seconds - did you forget to hide it?"
           Toast.makeText(weakActivity.get()?.applicationContext, warningMessage, Toast.LENGTH_LONG).show()

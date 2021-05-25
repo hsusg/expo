@@ -1,7 +1,6 @@
 #import <React/RCTImageSource.h>
 #import <React/RCTImageView.h>
 #import <UMCore/UMDefines.h>
-#import <EXSplashScreen/EXSplashScreenDismissableView.h>
 
 #import "EXKernel.h"
 #import "EXManagedAppSplashScreenConfiguration.h"
@@ -38,7 +37,7 @@
 
 - (UIView *)createSplashScreenView
 {
-  UIView *splashScreenView = [EXSplashScreenDismissableView new];
+  UIView *splashScreenView = [UIView new];
   [self configureSplashScreenView:splashScreenView previousConfiguration:nil];
   _splashScreenView = splashScreenView;
   return splashScreenView;

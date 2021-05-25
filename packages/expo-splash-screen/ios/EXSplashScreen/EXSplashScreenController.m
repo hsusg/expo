@@ -1,7 +1,6 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <EXSplashScreen/EXSplashScreenController.h>
-#import <EXSplashScreen/EXSplashScreenDismissableView.h>
 #import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
 
@@ -9,11 +8,13 @@
 
 @property (nonatomic, weak) UIViewController *viewController;
 @property (nonatomic, strong) UIView *splashScreenView;
+
 @property (nonatomic, weak) NSTimer *warningTimer;
 
 @property (nonatomic, assign) BOOL autoHideEnabled;
 @property (nonatomic, assign) BOOL splashScreenShown;
 @property (nonatomic, assign) BOOL appContentAppeared;
+
 
 @end
 
@@ -49,7 +50,7 @@
     
     self.warningTimer = [NSTimer scheduledTimerWithTimeInterval:20.0
                                                          target:self
-                                                       selector:@selector(showWarningIfDismissableView)
+                                                       selector:@selector(showSplashScreenVisibleWarning)
                                                        userInfo:nil
                                                         repeats:NO];
     
@@ -59,13 +60,27 @@
   }];
 }
 
--(void)showWarningIfDismissableView
+-(void)showSplashScreenVisibleWarning
 {
-  if ([self.splashScreenView isKindOfClass: [EXSplashScreenDismissableView class]]) {
-    [(EXSplashScreenDismissableView *)self.splashScreenView showVisibilityWarningWithCallback: ^{
-      [self hideWithCallback: nil];
-    }];
-  }
+  
+#if DEBUG
+  UIView *warningView = [UIView new];
+  CGRect warningViewFrame = CGRectMake(0, self.splashScreenView.bounds.size.height - 400, self.splashScreenView.bounds.size.width, 200);
+  warningView.frame = warningViewFrame;
+
+  UILabel *warningLabel = [[UILabel alloc] init];
+  warningLabel.frame =  CGRectMake(warningViewFrame.origin.x, warningViewFrame.origin.y, warningViewFrame.size.width - 32.0f, 100);
+  warningLabel.center = CGPointMake(warningViewFrame.size.width / 2, warningViewFrame.size.height / 2 - 50);
+
+  warningLabel.text = @"Looks like the splash screen has been visible for over 20 seconds - did you forget to hide it?";
+  warningLabel.numberOfLines = 0;
+  warningLabel.font = [UIFont systemFontOfSize:16.0f];
+  warningLabel.textColor = [UIColor darkGrayColor];
+  warningLabel.textAlignment = NSTextAlignmentCenter;
+  [warningView addSubview: warningLabel];
+
+  [self.splashScreenView addSubview: warningView];
+#endif
 }
 
 - (void)preventAutoHideWithCallback:(void (^)(BOOL))successCallback failureCallback:(void (^)(NSString * _Nonnull))failureCallback
