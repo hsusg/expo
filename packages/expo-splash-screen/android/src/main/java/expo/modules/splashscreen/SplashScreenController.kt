@@ -26,7 +26,7 @@ class SplashScreenController(
   private var autoHideEnabled = true
   private var splashScreenShown = false
 
-  private var warningTimerDurationMs = 20000
+  private var warningTimerDurationMs: Long = 20000
   private var warningHandler = Handler()
 
   private var rootView: ViewGroup? = null
