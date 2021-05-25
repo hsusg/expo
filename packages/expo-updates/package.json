@@ -37,6 +37,7 @@
     "@expo/metro-config": "^0.1.68",
     "@expo/config-plugins": "^1.0.32",
     "expo-structured-headers": "~1.0.1",
+    "expo-updates-interface": "~1.0.0",
     "fbemitter": "^2.1.1",
     "uuid": "^3.4.0",
     "resolve-from": "^5.0.0"
