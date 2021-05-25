@@ -10,11 +10,11 @@
 @property (nonatomic, strong) UIView *splashScreenView;
 
 @property (nonatomic, weak) NSTimer *warningTimer;
+@property (nonatomic, strong) UIButton *warningButton;
 
 @property (nonatomic, assign) BOOL autoHideEnabled;
 @property (nonatomic, assign) BOOL splashScreenShown;
 @property (nonatomic, assign) BOOL appContentAppeared;
-
 
 @end
 
@@ -29,6 +29,7 @@
     _splashScreenShown = NO;
     _appContentAppeared = NO;
     _splashScreenView = [splashScreenViewProvider createSplashScreenView];
+    _warningButton = [UIButton new];
   }
   return self;
 }
@@ -47,7 +48,6 @@
     self.splashScreenView.frame = rootView.bounds;
     [rootView addSubview:self.splashScreenView];
     self.splashScreenShown = YES;
-    
     self.warningTimer = [NSTimer scheduledTimerWithTimeInterval:20.0
                                                          target:self
                                                        selector:@selector(showSplashScreenVisibleWarning)
@@ -64,23 +64,43 @@
 {
   
 #if DEBUG
-  UIView *warningView = [UIView new];
-  CGRect warningViewFrame = CGRectMake(0, self.splashScreenView.bounds.size.height - 400, self.splashScreenView.bounds.size.width, 200);
-  warningView.frame = warningViewFrame;
+  int warningViewHeight = 100;
+  float paddingHorizontal = 32.0f;
+  float marginVertical = 16.0f;
+  
+  UIEdgeInsets safeAreaInsets = [self.splashScreenView safeAreaInsets];
+  
+  CGRect warningViewFrame = CGRectMake(self.splashScreenView.bounds.origin.x + paddingHorizontal, self.splashScreenView.bounds.size.height - safeAreaInsets.bottom - warningViewHeight - marginVertical, self.splashScreenView.bounds.size.width - paddingHorizontal * 2, warningViewHeight);
 
+  [_warningButton addTarget:self action:@selector(hideWarningView) forControlEvents:UIControlEventTouchUpInside];
+  
+  _warningButton.frame = warningViewFrame;
+  _warningButton.backgroundColor = [UIColor whiteColor];
+  _warningButton.layer.cornerRadius = 4.0f;
+  _warningButton.layer.shadowRadius  = 1.5f;
+  _warningButton.layer.shadowColor   = [[UIColor lightGrayColor] CGColor];
+  _warningButton.layer.shadowOpacity = 0.6f;
+  _warningButton.layer.shadowOffset = CGSizeMake(0, 1.5f);
+  _warningButton.layer.masksToBounds = NO;
+  
+  int warningLabelHeight = 80;
   UILabel *warningLabel = [[UILabel alloc] init];
-  warningLabel.frame =  CGRectMake(warningViewFrame.origin.x, warningViewFrame.origin.y, warningViewFrame.size.width - 32.0f, 100);
-  warningLabel.center = CGPointMake(warningViewFrame.size.width / 2, warningViewFrame.size.height / 2 - 50);
-
+  warningLabel.frame = CGRectMake(warningViewFrame.origin.x, warningViewFrame.origin.y, warningViewFrame.size.width - 32.0f, warningLabelHeight);
+  warningLabel.center = CGPointMake(warningViewFrame.size.width / 2, warningViewFrame.size.height / 2);
   warningLabel.text = @"Looks like the splash screen has been visible for over 20 seconds - did you forget to hide it?";
   warningLabel.numberOfLines = 0;
   warningLabel.font = [UIFont systemFontOfSize:16.0f];
   warningLabel.textColor = [UIColor darkGrayColor];
   warningLabel.textAlignment = NSTextAlignmentCenter;
-  [warningView addSubview: warningLabel];
-
-  [self.splashScreenView addSubview: warningView];
+  [_warningButton addSubview: warningLabel];
+  
+  [self.splashScreenView addSubview: _warningButton];
 #endif
+}
+
+-(void)hideWarningView {
+  _warningButton.hidden = true;
+  [_warningButton removeFromSuperview];
 }
 
 - (void)preventAutoHideWithCallback:(void (^)(BOOL))successCallback failureCallback:(void (^)(NSString * _Nonnull))failureCallback
